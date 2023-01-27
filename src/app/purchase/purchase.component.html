@@ -1,0 +1,64 @@
+<ActionBar class="action-bar">
+  <NavigationButton visibility="hidden"></NavigationButton>
+  <GridLayout columns="50, *, 50">
+    <Label
+      col="0"
+      class="fas"
+      text="&#xf0c9;"
+      (tap)="onDrawerButtonTap()"
+    ></Label>
+    <Label col="1" class="action-bar-title" text="عمليات الشراء"></Label>
+    <Label
+      col="2"
+      class="fas"
+      text="&#xf055;"
+      [nsRouterLink]="['edit-purchase', 0]"
+    ></Label>
+  </GridLayout>
+</ActionBar>
+
+<GridLayout>
+  <GridLayout rows="auto,*">
+    <GridLayout
+      row="0"
+      columns="*,*,*,*"
+      backgroundColor="#d9f7f3"
+      padding="10"
+    >
+      <Label col="0" color="#006455" textAlignment="center">حذف</Label>
+      <Label col="1" color="#006455" textAlignment="center">الإجمالي</Label>
+      <Label col="2" color="#006455" textAlignment="left">التاريخ</Label>
+      <Label col="3" color="#006455" textAlignment="left">المورد</Label>
+    </GridLayout>
+    <ListView row="1" [items]="items">
+      <ng-template let-item="item">
+        <GridLayout columns="*,*,*,*">
+          <Label
+            col="0"
+            textAlignment="center"
+            class="fas"
+            text="&#xf056;"
+            color="red"
+            (tap)="delete(item.id)"
+          ></Label>
+          <Label
+            col="1"
+            textAlignment="center"
+            [text]=""
+          ></Label>
+          <Label
+            col="2"
+            textAlignment="right"
+            [text]="item.date ? item.date : ''"
+          ></Label>
+          <Label
+            col="3"
+            textAlignment="left"
+            [text]="item.supplier"
+            [nsRouterLink]="['edit-purchase', item.id]"
+          ></Label>
+        </GridLayout>
+      </ng-template>
+    </ListView>
+  </GridLayout>
+</GridLayout>

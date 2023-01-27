@@ -1,0 +1,69 @@
+<ActionBar class="action-bar">
+  <NavigationButton visibility="hidden"></NavigationButton>
+  <GridLayout columns="50, *, 50">
+    <Label
+      col="0"
+      class="fas"
+      text="&#xf0c9;"
+      (tap)="onDrawerButtonTap()"
+    ></Label>
+    <Label col="1" class="action-bar-title" text="العملاء والموردين"></Label>
+    <Label
+      col="2"
+      class="fas"
+      text="&#xf055;"
+      [nsRouterLink]="['edit-user', 0]"
+    ></Label>
+  </GridLayout>
+</ActionBar>
+
+<GridLayout>
+  <GridLayout rows="auto,*">
+    <GridLayout
+      row="0"
+      columns="*,*,*,*,2*"
+      backgroundColor="#d9f7f3"
+      padding="10"
+    >
+      <Label col="0" color="#006455" textAlignment="center">حذف</Label>
+      <Label col="1" color="#006455" textAlignment="center">النوع</Label>
+      <Label col="2" color="#006455" textAlignment="center">الموبايل</Label>
+      <Label col="3" color="#006455" textAlignment="center">العنوان</Label>
+      <Label col="4" color="#006455" textAlignment="left">الاسم</Label>
+    </GridLayout>
+    <ListView row="1" [items]="items">
+      <ng-template let-item="item">
+        <GridLayout columns="*,*,*,*,2*">
+          <Label
+            col="0"
+            textAlignment="center"
+            class="fas"
+            text="&#xf056;"
+            color="red"
+            (tap)="delete(item.id)"
+          ></Label>
+          <Label
+            col="1"
+            textAlignment="center"
+            [text]="item.isSupplier === 1 ? 'مورد' : 'عميل'"
+          ></Label>
+          <Label
+            col="2"
+            textAlignment="center"
+            [text]="item.mobile ? item.mobile : ''"
+          ></Label>
+          <Label
+            col="3"
+            textAlignment="center"
+            [text]="item.address ? item.address : ''"
+          ></Label>
+          <Label
+            col="4"
+            [text]="item.name"
+            [nsRouterLink]="['edit-user', item.id]"
+          ></Label>
+        </GridLayout>
+      </ng-template>
+    </ListView>
+  </GridLayout>
+</GridLayout>

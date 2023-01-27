@@ -1,0 +1,60 @@
+<ActionBar class="action-bar">
+  <NavigationButton visibility="hidden"></NavigationButton>
+  <GridLayout columns="50, *">
+    <Label col="0" class="fas" text="&#xf060;" (tap)="onBackTap()"></Label>
+    <Label col="1" class="action-bar-title" text="العملاء والموردين"></Label>
+  </GridLayout>
+</ActionBar>
+
+<GridLayout>
+  <ScrollView>
+    <StackLayout [formGroup]="userForm" paddingRight="10">
+      <TextField
+        textAlignment="right"
+        formControlName="id"
+        visibility="hidden"
+        height="0"
+      ></TextField>
+      <GridLayout columns="2*,*">
+        <label verticalAlignment="middle" col="1" text="الاسم"></label>
+        <TextField col="0" formControlName="name"></TextField>
+      </GridLayout>
+      <GridLayout columns="2*,*">
+        <label verticalAlignment="middle" col="1" text="العنوان"></label>
+        <TextField col="0" formControlName="address"></TextField>
+      </GridLayout>
+      <GridLayout columns="2*,*">
+        <label verticalAlignment="middle" col="1" text="الموبايل"></label>
+        <TextField col="0" formControlName="mobile"></TextField>
+      </GridLayout>
+      <GridLayout columns="2*,*">
+        <label verticalAlignment="middle" col="1" text="مورد ؟"></label>
+        <DropDown
+          col="0"
+          textAlignment="left"
+          itemsTextAlignment="center"
+          [items]="isSupplierYesNo"
+          [(ngModel)]="selectedIsSupplierYesNoIndex"
+          formControlName="isSupplier"
+        ></DropDown>
+      </GridLayout>
+      <StackLayout orientation="horizontal">
+        <button
+          horizontalAlignment="left"
+          width="33%"
+          backgroundColor="#F1F8E9"
+          (tap)="cancel()"
+          text="إلغاء"
+        ></button>
+        <button
+          horizontalAlignment="right"
+          width="33%"
+          backgroundColor="#006968"
+          color="#ffffff"
+          (tap)="save()"
+          text="حفظ"
+        ></button>
+      </StackLayout>
+    </StackLayout>
+  </ScrollView>
+</GridLayout>

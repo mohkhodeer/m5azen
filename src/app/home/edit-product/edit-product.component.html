@@ -1,0 +1,103 @@
+<ActionBar class="action-bar">
+  <NavigationButton visibility="hidden"></NavigationButton>
+  <GridLayout columns="50, *">
+    <Label col="0" class="fas" text="&#xf060;" (tap)="onBackTap()"></Label>
+    <Label col="1" class="action-bar-title" text="المنتجات"></Label>
+  </GridLayout>
+</ActionBar>
+
+<GridLayout>
+  <ScrollView>
+    <StackLayout [formGroup]="productForm" paddingRight="10">
+      <TextField
+        textAlignment="right"
+        formControlName="id"
+        visibility="hidden"
+        height="0"
+      ></TextField>
+      <GridLayout columns="2*,*">
+        <label verticalAlignment="middle" col="1" text="الصنف"></label>
+        <!-- <ListPicker
+          formControlName="categoryId"
+          [items]="categories"
+          class="picker"
+        >
+        </ListPicker> -->
+        <DropDown
+          col="0"
+          backroundColor="red"
+          textAlignment="left"
+          itemsTextAlignment="center"
+          [items]="categories"
+          [(ngModel)]="selectedCategoryIndex"
+          formControlName="categoryId"
+        ></DropDown>
+      </GridLayout>
+      <GridLayout columns="2*,*">
+        <button
+          height="30"
+          borderColor="#006968"
+          borderWidth="1"
+          textAlignment="center"
+          marginTop="10"
+          verticalAlignment="middle"
+          fontSize="12"
+          text="إضافة صنف جديد"
+          [nsRouterLink]="['/category/edit-category', 0]"
+        ></button>
+      </GridLayout>
+      <GridLayout columns="2*,*">
+        <label verticalAlignment="middle" col="1" text="المنتج"></label>
+        <TextField col="0" formControlName="name"></TextField>
+      </GridLayout>
+      <GridLayout columns="2*,*">
+        <label verticalAlignment="middle" col="1" text="الكمية"></label>
+        <TextField
+          col="0"
+          formControlName="quantity"
+          keyboardType="number"
+        ></TextField>
+      </GridLayout>
+      <GridLayout columns="2*,*">
+        <label verticalAlignment="middle" col="1" text="الوحدة"></label>
+        <DropDown
+          col="0"
+          textAlignment="left"
+          itemsTextAlignment="center"
+          [items]="units"
+          [(ngModel)]="selectedUnitIndex"
+          formControlName="unit"
+        ></DropDown>
+      </GridLayout>
+      <GridLayout columns="2*,*">
+        <label verticalAlignment="middle" col="1" text="سعر البيع"></label>
+        <TextField
+          col="0"
+          formControlName="salePrice"
+          keyboardType="number"
+        ></TextField>
+      </GridLayout>
+      <GridLayout columns="2*,*">
+        <label verticalAlignment="middle" col="1" text="ملاحظات"></label>
+        <TextView col="0" formControlName="notes" height="50"></TextView>
+      </GridLayout>
+      <StackLayout orientation="horizontal">
+        <button
+          horizontalAlignment="left"
+          width="33%"
+          backgroundColor="#F1F8E9"
+          (tap)="cancel()"
+          text="إلغاء"
+        ></button>
+        <button
+          horizontalAlignment="right"
+          width="33%"
+          backgroundColor="#006968"
+          color="#ffffff"
+          (tap)="save()"
+          text="حفظ"
+        ></button>
+      </StackLayout>
+    </StackLayout>
+  </ScrollView>
+</GridLayout>

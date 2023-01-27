@@ -1,0 +1,60 @@
+<ActionBar class="action-bar">
+  <NavigationButton visibility="hidden"></NavigationButton>
+  <GridLayout columns="50, *, 50">
+    <Label
+      col="0"
+      class="fas"
+      text="&#xf0c9;"
+      (tap)="onDrawerButtonTap()"
+    ></Label>
+    <Label col="1" class="action-bar-title" text="الأصناف"></Label>
+    <Label col="2" class="fas" text="&#xf055;" [nsRouterLink]="['edit-category', 0]"></Label>
+  </GridLayout>
+</ActionBar>
+
+<GridLayout>
+  <GridLayout rows="auto,auto,*">
+    <StackLayout row="0">
+      <button
+        [nsRouterLink]="['/home']"
+        text="الذهاب إلى المنتجات"
+        height="40"
+        fontSize="12"
+        borderWidth="1"
+        borderColor="#d9f7f3"
+        color="#006455"
+      ></button>
+    </StackLayout>
+    <GridLayout
+      row="1"
+      columns="50, *"
+      backgroundColor="#d9f7f3"
+      padding="10"
+    >
+      <Label col="0" color="#006455" textAlignment="center" paddingLeft="10">حذف</Label>
+      <Label col="1" color="#006455" textAlignment="left" paddingRight="10">الصنف</Label>
+    </GridLayout>
+
+    <GridLayout row="2">
+        <ListView [items]="items">
+          <ng-template let-item="item">
+            <GridLayout columns="50, *">
+              <Label
+                textAlignment="center"
+                col="0"
+                class="fas"
+                text="&#xf056;"
+                color="red"
+                (tap)="delete(item.id)"
+              ></Label>
+              <Label
+                col="1"
+                [text]="item.name"
+                [nsRouterLink]="['edit-category', item.id]"
+              ></Label>
+            </GridLayout>
+          </ng-template>
+        </ListView>
+    </GridLayout>
+  </GridLayout>
+</GridLayout>

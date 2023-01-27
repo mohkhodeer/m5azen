@@ -1,0 +1,235 @@
+<ActionBar class="action-bar">
+  <NavigationButton visibility="hidden"></NavigationButton>
+  <GridLayout columns="50, *">
+    <Label col="0" class="fas" text="&#xf060;" (tap)="onBackTap()"></Label>
+    <Label col="1" class="action-bar-title" text="عملية شراء"></Label>
+  </GridLayout>
+</ActionBar>
+
+<GridLayout [ngClass]="showModal ? 'overlay' : ''">
+  <ScrollView>
+    <StackLayout [formGroup]="purchaseForm" paddingRight="10" marginBottom="10">
+      <TextField
+        textAlignment="right"
+        formControlName="id"
+        visibility="hidden"
+        height="0"
+      ></TextField>
+      <GridLayout columns="*,*">
+        <label
+          col="1"
+          padding="8"
+          marginRight="10"
+          backgroundColor="#d9f7f3"
+          textAlignment="center"
+          class="form-label"
+          verticalAlignment="middle"
+          [text]="selectedSupplier"
+          (tap)="showSupplierListFn()"
+        ></label>
+        <label
+          col="0"
+          height="25"
+          borderBottomColor="#d9f7f3"
+          borderBottomWidth="1"
+          textAlignment="center"
+          verticalAlignment="middle"
+          fontSize="12"
+          width="130"
+          text="إضافة مورد جديد"
+          [nsRouterLink]="['/user/edit-user', 0]"
+        ></label>
+        <!-- <ListPicker
+          row="1"
+          formControlName="supplierId"
+          [items]="suppliers"
+          class="picker"
+          marginLeft="15"
+          marginTop="0"
+          paddingTop="0"
+          width="100%"
+          horizontalAlignment="center"
+          (selectedIndexChange)="onSelectedSupplierChange($event)"
+          [selectedIndex]="selectedSupplierIndex"
+        >
+        </ListPicker> -->
+      </GridLayout>
+      <StackLayout
+        formArrayName="productFormGroup"
+        backgroundColor="#eee"
+        padding="15"
+        margin="15 10 10 20"
+      >
+        <StackLayout
+          *ngFor="let productGroup of productFormGroup.controls; let i = index"
+        >
+          <StackLayout [formGroupName]="i" marginBottom="15">
+            <GridLayout columns="2*,*">
+              <label verticalAlignment="middle" col="1" text="المنتج"></label>
+              <label
+                col="0"
+                marginRight="15"
+                marginLeft="15"
+                padding="8 0"
+                textAlignment="center"
+                backgroundColor="#d9f7f3"
+                class="form-label"
+                [text]="selectedProduct[i]"
+                (tap)="showProductListFn(i)"
+              ></label>
+            </GridLayout>
+            <GridLayout columns="2*,*">
+              <label col="1" text="الكمية" verticalAlignment="middle"></label>
+              <TextField
+                col="0"
+                textAlignment="right"
+                formControlName="quantity"
+                keyboardType="number"
+              ></TextField>
+            </GridLayout>
+            <GridLayout columns="2*,*">
+              <label col="1" text="السعر" verticalAlignment="middle"></label>
+              <TextField
+                col="0"
+                textAlignment="right"
+                formControlName="price"
+                keyboardType="number"
+              ></TextField>
+            </GridLayout>
+            <GridLayout columns="2*,*">
+              <label col="1" text="المبلغ المدفوع" verticalAlignment="middle"
+              ></label>
+              <TextField
+                col="0"
+                textAlignment="right"
+                formControlName="paidPrice"
+                keyboardType="number"
+              ></TextField>
+            </GridLayout>
+            <GridLayout columns="2*,*">
+              <button
+                col="0"
+                text="إضافة منتج آخر"
+                (tap)="addProductToForm($event)"
+                fontSize="12"
+                height="45"
+              ></button>
+              <button
+                [visibility]="
+                  productFormGroup.length > 1 ? 'visible' : 'hidden'
+                "
+                col="1"
+                (tap)="removeProductFromForm(i)"
+                text="حذف"
+                height="45"
+              ></button>
+            </GridLayout>
+          </StackLayout>
+        </StackLayout>
+      </StackLayout>
+      <GridLayout>
+        <TextView
+          col="0"
+          marginTop="15"
+          height="40"
+          textAlignment="left"
+          formControlName="notes"
+          hint="ملاحظات"
+        >
+        </TextView>
+      </GridLayout>
+      <StackLayout orientation="horizontal">
+        <button
+          horizontalAlignment="left"
+          width="33%"
+          backgroundColor="#F1F8E9"
+          (tap)="cancel()"
+          text="إلغاء"
+        ></button>
+        <button
+          horizontalAlignment="right"
+          width="33%"
+          backgroundColor="#006968"
+          color="#ffffff"
+          (tap)="save()"
+          text="حفظ"
+        ></button>
+      </StackLayout>
+    </StackLayout>
+  </ScrollView>
+</GridLayout>
+
+<AbsoluteLayout class="dialog-wrapper" *ngIf="showModal">
+  <GridLayout rows="*,auto" class="dialog">
+    <GridLayout row="0" rows="*,*" *ngIf="showSupplierList">
+      <label
+        row="0"
+        class="my-label"
+        text="اختر المورد"
+        horizontalAlignment="center"
+        textAlignment="center"
+        width="100%"
+      ></label>
+      <ListView
+        row="1"
+        borderColor="#d9f7f3"
+        borderWidth="1"
+        margin="20"
+        height="150"
+        [items]="suppliers"
+        (itemTap)="onSupplierSelect($event)"
+        class="list-group"
+      >
+        <ng-template
+          let-item="item"
+          let-i="index"
+          let-odd="odd"
+          let-even="even"
+        >
+          <!-- The item template can only have a single root view container (e.g. GridLayout, StackLayout, etc.)-->
+          <GridLayout>
+            <label [text]="item.name" class="list-group-item"></label>
+          </GridLayout>
+        </ng-template>
+      </ListView>
+    </GridLayout>
+    <GridLayout row="0" rows="auto,*" *ngIf="showProductList">
+      <label
+        class="my-label"
+        row="0"
+        text="اختر المنتج"
+        horizontalAlignment="center"
+        textAlignment="center"
+      ></label>
+      <ListView
+        row="1"
+        borderColor="#d9f7f3"
+        borderWidth="1"
+        margin="20"
+        height="150"
+        [items]="products"
+        (itemTap)="onProductSelect($event)"
+        class="list-group"
+      >
+        <ng-template
+          let-item="item"
+          let-i="index"
+          let-odd="odd"
+          let-even="even"
+        >
+          <GridLayout>
+            <label [text]="item.name" class="list-group-item"></label>
+          </GridLayout>
+        </ng-template>
+      </ListView>
+    </GridLayout>
+    <button
+      row="1"
+      horizontalAlignment="left"
+      width="33%"
+      backgroundColor="#F1F8E9"
+      (tap)="showPurchaseFormFn()"
+      text="رجوع"
+    ></button>
+  </GridLayout>
+</AbsoluteLayout>
