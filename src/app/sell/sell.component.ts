@@ -2,43 +2,34 @@ import { Component, OnInit } from "@angular/core";
 import { Application, Dialogs } from "@nativescript/core";
 import { RadSideDrawer } from "nativescript-ui-sidedrawer";
 import { TablesService } from "../shared/tables.service";
-import { PurchaseService } from "../shared/purchase.service";
-import { Purchase } from "../purchase.model";
+import { SellService } from "../shared/sell.service";
+import { Sell } from "../sell.model";
 
 @Component({
-  selector: "Purchase",
-  templateUrl: "./purchase.component.html",
+  selector: "Sell",
+  templateUrl: "./sell.component.html",
 })
-export class PurchaseComponent implements OnInit {
-  items: Array<Purchase> = [
+export class SellComponent implements OnInit {
+  items: Array<Sell> = [
     {
       id: 0,
-      supplierId: 0,
+      customerId: 0,
       date: 0,
       notes: "",
       totalPaidPrice: 0,
       totalPrice: 0,
-      details: [
-        {
-          id: 0,
-          purchaseInvoiceId: 0,
-          productId: 0,
-          quantity: 0,
-          price: 0,
-          paidPrice: 0,
-        },
-      ],
+      totalPurchasePrice: 0,
     },
   ];
 
   constructor(
-    private purchaseService: PurchaseService,
+    private sellService: SellService,
     private tablesService: TablesService
   ) {}
 
   ngOnInit(): void {
-    console.log("purchase....");
-    this.getAllPurchases();
+    console.log("sell....");
+    this.getAllSells();
   }
 
   delete(id) {
@@ -52,15 +43,15 @@ export class PurchaseComponent implements OnInit {
       }).then((yes) => {
         console.log("Dialog closed!");
         if (yes) {
-          this.purchaseService.deletePurchaseInvoice(id).then(
+          this.sellService.deleteSellInvoice(id).then(
             (result: any) => {
+              console.log("deleteSell:::", result);
               // TODO: update stock
               // TODO: update sandoq
-              console.log("deletePurchase:::", result);
-              this.getAllPurchases();
+              this.getAllSells();
             },
             (err) => {
-              console.log("deletePurchase err:::", err);
+              console.log("deleteSell err:::", err);
             }
           );
         }
@@ -68,10 +59,12 @@ export class PurchaseComponent implements OnInit {
     }
   }
 
-  getAllPurchases() {
-    this.purchaseService.getPurchaseInvoices().then(
+  getAllSells() {
+    this.sellService.getSellInvoices().then(
       (result: any) => {
         if (result.status) {
+          console.log("getAllSells::", result);
+
           this.items = result.data;
         }
       },

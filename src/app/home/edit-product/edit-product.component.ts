@@ -19,16 +19,7 @@ import { CategoryService } from "../../shared/category.service";
   templateUrl: "./edit-product.component.html",
 })
 export class EditProductComponent implements OnInit {
-  product: Product = {
-    id: 0,
-    categoryId: 0,
-    name: "",
-    quantity: 0,
-    unit: "",
-    averagePrice: 0,
-    salePrice: 0,
-    notes: "",
-  };
+  product: Product;
   public productForm: FormGroup;
   selectedCategoryIndex = 0;
   selectedUnitIndex = 0;
@@ -45,11 +36,11 @@ export class EditProductComponent implements OnInit {
   ) {
     this.productForm = this.fb.group({
       id: [0],
-      categoryId: [0, [Validators.required]],
+      categoryId: ["", [Validators.required]],
       name: ["", [Validators.required]],
-      quantity: [0, [Validators.required]],
+      quantity: ["", [Validators.required]],
       unit: ["", [Validators.required]],
-      salePrice: [0, [Validators.required]],
+      salePrice: ["", [Validators.required]],
       notes: [""],
     });
   }
@@ -91,7 +82,7 @@ export class EditProductComponent implements OnInit {
           this.productForm.get("name").setValue(this.product.name);
           this.productForm.get("quantity").setValue(this.product.quantity);
           this.productForm.get("unit").setValue(this.product.unit);
-          this.productForm.get("salePrice").setValue(this.product.salePrice);
+          this.productForm.get("salePrice").setValue(Math.round(this.product.salePrice * 100) / 100);
           this.productForm.get("notes").setValue(this.product.notes);
         }
       },
@@ -148,7 +139,7 @@ export class EditProductComponent implements OnInit {
       // categoryId: this.productForm.get("categoryId").value,
       quantity: this.productForm.get("quantity").value,
       unit: this.productForm.get("unit").value,
-      salePrice: this.productForm.get("salePrice").value,
+      salePrice: Math.round(this.productForm.get("salePrice").value * 100) / 100,
       notes: this.productForm.get("notes").value,
     };
     if (this.productForm.valid) {

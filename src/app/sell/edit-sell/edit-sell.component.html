@@ -2,13 +2,13 @@
   <NavigationButton visibility="hidden"></NavigationButton>
   <GridLayout columns="50, *">
     <Label col="0" class="fas" text="&#xf060;" (tap)="onBackTap()"></Label>
-    <Label col="1" class="action-bar-title" text="عملية شراء"></Label>
+    <Label col="1" class="action-bar-title" text="عملية بيع"></Label>
   </GridLayout>
 </ActionBar>
 
 <GridLayout [ngClass]="showModal ? 'overlay' : ''">
   <ScrollView>
-    <StackLayout [formGroup]="purchaseForm" paddingRight="10" marginBottom="10">
+    <StackLayout [formGroup]="sellForm" paddingRight="10" marginBottom="10">
       <TextField
         textAlignment="right"
         formControlName="id"
@@ -24,8 +24,8 @@
           textAlignment="center"
           class="form-label"
           verticalAlignment="middle"
-          [text]="selectedSupplier"
-          (tap)="showSupplierListFn()"
+          [text]="selectedCustomer"
+          (tap)="showCustomerListFn()"
         ></label>
         <label
           col="0"
@@ -36,21 +36,21 @@
           verticalAlignment="middle"
           fontSize="12"
           width="130"
-          text="إضافة مورد جديد"
+          text="إضافة عميل جديد"
           [nsRouterLink]="['/user/edit-user', 0]"
         ></label>
         <!-- <ListPicker
           row="1"
-          formControlName="supplierId"
-          [items]="suppliers"
+          formControlName="customerId"
+          [items]="customers"
           class="picker"
           marginLeft="15"
           marginTop="0"
           paddingTop="0"
           width="100%"
           horizontalAlignment="center"
-          (selectedIndexChange)="onSelectedSupplierChange($event)"
-          [selectedIndex]="selectedSupplierIndex"
+          (selectedIndexChange)="onSelectedCustomerChange($event)"
+          [selectedIndex]="selectedCustomerIndex"
         >
         </ListPicker> -->
       </GridLayout>
@@ -97,7 +97,10 @@
               ></TextField>
             </GridLayout>
             <GridLayout columns="2*,*">
-              <label col="1" text="المبلغ المدفوع" verticalAlignment="middle"
+              <label
+                col="1"
+                text="المبلغ المدفوع"
+                verticalAlignment="middle"
               ></label>
               <TextField
                 col="0"
@@ -106,6 +109,11 @@
                 keyboardType="number"
                 (focus)="calcPrice(i)"
                 [hint]="totalPaidPrice[i]"
+              ></TextField>
+              <TextField
+                formControlName="purchasePrice"
+                visibility="hidden"
+                height="0"
               ></TextField>
             </GridLayout>
             <GridLayout columns="2*,*">
@@ -155,20 +163,20 @@
           color="#ffffff"
           (tap)="save()"
           text="حفظ"
-          [isEnabled]="purchaseForm.valid"
+          [isEnabled]="sellForm.valid"
         ></button>
       </StackLayout>
     </StackLayout>
   </ScrollView>
 </GridLayout>
 
-<AbsoluteLayout class="dialog-wrapper" *ngIf="showModal" style="z-index: 999;">
+<AbsoluteLayout class="dialog-wrapper" *ngIf="showModal" style="z-index: 999">
   <GridLayout rows="*,auto" class="dialog">
-    <GridLayout row="0" rows="*,*" *ngIf="showSupplierList">
+    <GridLayout row="0" rows="*,*" *ngIf="showCustomerList">
       <label
         row="0"
         class="my-label"
-        text="اختر المورد"
+        text="اختر العميل"
         horizontalAlignment="center"
         textAlignment="center"
         width="100%"
@@ -179,8 +187,8 @@
         borderWidth="1"
         margin="20"
         height="150"
-        [items]="suppliers"
-        (itemTap)="onSupplierSelect($event)"
+        [items]="customers"
+        (itemTap)="onCustomerSelect($event)"
         class="list-group"
       >
         <ng-template
@@ -231,7 +239,7 @@
       horizontalAlignment="left"
       width="33%"
       backgroundColor="#F1F8E9"
-      (tap)="showPurchaseFormFn()"
+      (tap)="showSellFormFn()"
       text="رجوع"
     ></button>
   </GridLayout>

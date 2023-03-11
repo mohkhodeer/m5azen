@@ -57,7 +57,7 @@ export class TablesService {
 
       // sale_invoice table
       db.execSQL(
-        "CREATE TABLE IF NOT EXISTS sale_invoice (id INTEGER PRIMARY KEY AUTOINCREMENT, customer_id INTEGER, date INTEGER, notes TEXT)"
+        "CREATE TABLE IF NOT EXISTS sale_invoice (id INTEGER PRIMARY KEY AUTOINCREMENT, customer_id INTEGER, date INTEGER, notes TEXT, total_price REAL, total_paid_price REAL, total_purchase_price REAL)"
       ).then(
         () => {
           console.log("CREATE TABLE sale_invoice...");
@@ -69,7 +69,7 @@ export class TablesService {
 
       // sale_invoice_details table
       db.execSQL(
-        "CREATE TABLE IF NOT EXISTS sale_invoice_details (id INTEGER PRIMARY KEY AUTOINCREMENT, sale_invoice_id INTEGER, product_id INTEGER, quantity INTEGER, price REAL, paid_price REAL)"
+        "CREATE TABLE IF NOT EXISTS sale_invoice_details (id INTEGER PRIMARY KEY AUTOINCREMENT, sale_invoice_id INTEGER, product_id INTEGER, quantity INTEGER, price REAL, paid_price REAL, purchase_price REAL)"
       ).then(
         () => {
           console.log("CREATE TABLE sale_invoice_details...");
@@ -81,7 +81,7 @@ export class TablesService {
 
       // purchase_invoice table
       db.execSQL(
-        "CREATE TABLE IF NOT EXISTS purchase_invoice (id INTEGER PRIMARY KEY AUTOINCREMENT, supplier_id INTEGER, date INTEGER, notes TEXT)"
+        "CREATE TABLE IF NOT EXISTS purchase_invoice (id INTEGER PRIMARY KEY AUTOINCREMENT, supplier_id INTEGER, date INTEGER, notes TEXT, total_price REAL, total_paid_price REAL)"
       ).then(
         () => {
           console.log("CREATE TABLE purchase_invoice...");

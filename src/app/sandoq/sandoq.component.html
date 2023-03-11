@@ -1,0 +1,23 @@
+<ActionBar class="action-bar">
+  <NavigationButton visibility="hidden"></NavigationButton>
+  <GridLayout columns="50, *">
+    <Label class="action-bar-title" text="الصندوق" colSpan="2"></Label>
+
+    <Label class="fas" text="&#xf0c9;" (tap)="onDrawerButtonTap()"></Label>
+  </GridLayout>
+</ActionBar>
+
+<GridLayout class="page__content">
+  <Label class="page__content-icon far" text="&#xf1ea;"></Label>
+  <GridLayout rows="auto,*,auto">
+    <GridLayout row="0" columns="*,*" padding="20" borderBottomWidth="1" borderBottomColor="#aaaaaa">
+      <Label fontSize="14" col="1" text="الرصيد"></Label>
+      <Label textAlignment="right" fontSize="14" col="0" text="تاريخ التحديث"></Label>
+    </GridLayout>
+    <GridLayout row="1" columns="*,*" padding="20">
+      <TextField verticalAlignment="top" keyboardType="number" fontSize="16" col="1" [(ngModel)]=sandoqBalance></TextField>
+      <Label verticalAlignment="top" textAlignment="left" fontSize="16" col="0" text="{{ sandoqModifiedDate }}"></Label>
+    </GridLayout>
+    <button verticalAlignment="top" row="2" text="حفظ" (tap)="save()"></button>
+  </GridLayout>
+</GridLayout>

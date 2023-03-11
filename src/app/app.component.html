@@ -13,8 +13,18 @@
           [class.-selected]="isComponentSelected('/home')"
           (tap)="onNavItemTap('/home')"
         >
-          <Label col="0" text="&#xf015;" class="nt-icon fas"></Label>
+          <Label col="0" text="&#xf015;" class="nt-icon fas" textAlignment="center"></Label>
           <Label col="1" text="المنتجات" class="p-r-10"></Label>
+        </GridLayout>
+
+        <GridLayout
+          columns="auto, *"
+          class="nt-drawer__list-item"
+          [class.-selected]="isComponentSelected('/sell')"
+          (tap)="onNavItemTap('/sell')"
+        >
+          <Label col="0" text="&#xf07a;" class="nt-icon fas" textAlignment="center"></Label>
+          <Label col="1" text="عمليات البيع" class="p-r-10"></Label>
         </GridLayout>
 
         <GridLayout
@@ -23,8 +33,8 @@
           [class.-selected]="isComponentSelected('/purchase')"
           (tap)="onNavItemTap('/purchase')"
         >
-          <Label col="0" text="&#xf1ea;" class="nt-icon far"></Label>
-          <Label col="1" text="عملية شراء" class="p-r-10"></Label>
+          <Label col="0" text="&#xf0d1;" class="nt-icon fas" textAlignment="center"></Label>
+          <Label col="1" text="عمليات الشراء" class="p-r-10"></Label>
         </GridLayout>
 
         <GridLayout
@@ -33,7 +43,7 @@
           [class.-selected]="isComponentSelected('/category')"
           (tap)="onNavItemTap('/category')"
         >
-          <Label col="0" text="&#xf002;" class="nt-icon fas"></Label>
+          <Label col="0" text="&#xf5fd;" class="nt-icon fas" textAlignment="center"></Label>
           <Label col="1" text="الأصناف" class="p-r-10"></Label>
         </GridLayout>
 
@@ -43,21 +53,32 @@
           [class.-selected]="isComponentSelected('/user')"
           (tap)="onNavItemTap('/user')"
         >
-          <Label col="0" text="&#xf005;" class="nt-icon fas"></Label>
+          <Label col="0" text="&#xf007;" class="nt-icon fas" textAlignment="center"></Label>
           <Label col="1" text="العملاء والموردين" class="p-r-10"></Label>
         </GridLayout>
-
-        <StackLayout class="hr"></StackLayout>
+        
+        <GridLayout
+          columns="auto, *"
+          class="nt-drawer__list-item"
+          [class.-selected]="isComponentSelected('/sandoq')"
+          (tap)="onNavItemTap('/sandoq')"
+        >
+          <Label col="0" text="&#xf49e;" class="nt-icon fas" textAlignment="center"></Label>
+          <Label col="1" text="الصندوق" class="p-r-10"></Label>
+        </GridLayout>
 
         <GridLayout
           columns="auto, *"
           class="nt-drawer__list-item"
-          [class.-selected]="isComponentSelected('/settings')"
-          (tap)="onNavItemTap('/settings')"
+          [class.-selected]="isComponentSelected('/reports')"
+          (tap)="onNavItemTap('/reports')"
         >
-          <Label col="0" text="&#xf013;" class="nt-icon fas"></Label>
-          <Label col="1" text="Settings" class="p-r-10"></Label>
+          <Label col="0" text="&#xf328;" class="nt-icon fas" textAlignment="center"></Label>
+          <Label col="1" text="تقارير الأرباح" class="p-r-10"></Label>
         </GridLayout>
+
+        <StackLayout class="hr"></StackLayout>
+
       </StackLayout>
     </ScrollView>
   </GridLayout>

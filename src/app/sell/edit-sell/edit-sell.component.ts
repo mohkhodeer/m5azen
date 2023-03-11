@@ -3,7 +3,6 @@ import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
 import {
   FormGroup,
-  FormControl,
   FormBuilder,
   Validators,
   FormArray,
@@ -13,41 +12,43 @@ import { ItemEventData } from "@nativescript/core";
 import { TablesService } from "../../shared/tables.service";
 import { UserService } from "../../shared/user.service";
 import { ProductService } from "../../shared/product.service";
-import { PurchaseService } from "../../shared/purchase.service";
+import { SellService } from "../../shared/sell.service";
 import { SandoqService } from "../../shared/sandoq.service";
-import { Purchase, PurchaseDetails } from "../../purchase.model";
+import { Sell, SellDetails } from "../../sell.model";
 
 @Component({
-  selector: "editPurchase",
-  templateUrl: "./edit-purchase.component.html",
+  selector: "editSell",
+  templateUrl: "./edit-sell.component.html",
 })
-export class EditPurchaseComponent implements OnInit {
-  purchaseDetails: Purchase = {
+export class EditSellComponent implements OnInit {
+  sellDetails: Sell = {
     id: 0,
     date: 0,
-    supplierId: 0,
+    customerId: 0,
     notes: "",
     totalPaidPrice: 0,
     totalPrice: 0,
+    totalPurchasePrice: 0,
     details: [
       {
         id: 0,
         paidPrice: 0,
         price: 0,
         productId: 0,
-        purchaseInvoiceId: 0,
+        sellInvoiceId: 0,
         quantity: 0,
+        purchasePrice: 0
       },
     ],
   };
-  public purchaseForm: FormGroup;
-  suppliers: Array<any>;
+  public sellForm: FormGroup;
+  customers: Array<any>;
   products: Array<any>;
   selectedProductFormArrayIndex: number = 0;
-  showSupplierList: boolean = false;
+  showCustomerList: boolean = false;
   showProductList: boolean = false;
   showModal: boolean = false;
-  selectedSupplier: string = "اختر المورد...";
+  selectedCustomer: string = "اختر العميل...";
   selectedProduct: Array<string> = ["اختر المنتج..."];
   totalPaidPrice: Array<number> = [];
 
@@ -57,13 +58,13 @@ export class EditPurchaseComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private routerExtensions: RouterExtensions,
     private userService: UserService,
-    private purchaseService: PurchaseService,
+    private sellService: SellService,
     private productService: ProductService,
     private sandoqService: SandoqService
   ) {
-    this.purchaseForm = this.fb.group({
+    this.sellForm = this.fb.group({
       id: [0],
-      supplierId: ["", [Validators.required]],
+      customerId: ["", [Validators.required]],
       notes: [""],
       productFormGroup: this.fb.array([
         this.fb.group({
@@ -72,7 +73,8 @@ export class EditPurchaseComponent implements OnInit {
           quantity: ["", [Validators.required]],
           price: ["", [Validators.required]],
           paidPrice: ["", [Validators.required]],
-          purchaseInvoiceId: [0],
+          purchasePrice: [0],
+          sellInvoiceId: [0],
         }),
       ]),
     });
@@ -81,12 +83,12 @@ export class EditPurchaseComponent implements OnInit {
   ngOnInit() {
     const id = +this.activatedRoute.snapshot.params.id;
     console.log("id>>>", id);
-    this.resetFormControls(this.purchaseForm);
-    this.getAllSuppliers();
+    this.resetFormControls(this.sellForm);
+    this.getAllCustomers();
     this.getAllProducts();
     if (id && id > 0) {
-      this.getPurchaseDetails(id);
-      console.log("getPurchaseDetails>>>>>", this.purchaseDetails);
+      this.getSellDetails(id);
+      console.log("getSellDetails>>>>>", this.sellDetails);
       console.log("end..");
     }
   }
@@ -94,58 +96,66 @@ export class EditPurchaseComponent implements OnInit {
   showProductListFn(index) {
     this.showModal = true;
     this.showProductList = true;
-    this.showSupplierList = false;
+    this.showCustomerList = false;
     this.selectedProductFormArrayIndex = index;
   }
 
-  showSupplierListFn() {
+  showCustomerListFn() {
     this.showModal = true;
-    this.showSupplierList = true;
+    this.showCustomerList = true;
     this.showProductList = false;
   }
 
-  showPurchaseFormFn() {
+  showSellFormFn() {
     this.showModal = false;
-    this.showSupplierList = false;
+    this.showCustomerList = false;
     this.showProductList = false;
   }
 
-  onSupplierSelect(args: ItemEventData) {
-    console.log("onSupplierSelect::");
+  onCustomerSelect(args: ItemEventData) {
+    console.log("onCustomerSelect::");
     console.log(
       `Index: ${args.index}; View: ${args.view} ; Item: ${
-        this.suppliers[args.index].id
-      }, ${this.suppliers[args.index].name}`
+        this.customers[args.index].id
+      }, ${this.customers[args.index].name}`
     );
-    this.selectedSupplier = this.suppliers[args.index].name;
-    this.purchaseForm.get("supplierId").setValue(this.suppliers[args.index].id);
-    this.showPurchaseFormFn();
+    this.selectedCustomer = this.customers[args.index].name;
+    this.sellForm.get("customerId").setValue(this.customers[args.index].id);
+    this.showSellFormFn();
   }
 
   onProductSelect(args: ItemEventData) {
-    console.log("onProductSelect::");
+    console.log("onProductSelect::", this.products[args.index]);
     this.selectedProduct[this.selectedProductFormArrayIndex] =
       this.products[args.index].name;
     this.productFormGroup
       .at(this.selectedProductFormArrayIndex)
       .get("productId")
       .setValue(this.products[args.index].id);
-    this.showPurchaseFormFn();
+    this.productFormGroup
+      .at(this.selectedProductFormArrayIndex)
+      .get("price")
+      .setValue(this.products[args.index].salePrice);
+      this.productFormGroup
+      .at(this.selectedProductFormArrayIndex)
+      .get("purchasePrice")
+      .setValue(this.products[args.index].purchasePrice);
+    this.showSellFormFn();
   }
 
-  getAllSuppliers() {
-    this.userService.getUsers(1).then((result: any) => {
+  getAllCustomers() {
+    this.userService.getUsers(0).then((result: any) => {
       if (result.status && result.data && result.data.length > 0) {
-        let suppliers = [];
+        let customers = [];
         result.data.forEach((el) => {
-          suppliers.push({
+          customers.push({
             id: el.id,
             name: el.name,
           });
         });
-        this.suppliers = suppliers;
+        this.customers = customers;
       }
-      console.log("this.suppliers:", this.suppliers);
+      console.log("this.customers:", this.customers);
     });
   }
 
@@ -157,6 +167,8 @@ export class EditPurchaseComponent implements OnInit {
           products.push({
             id: el.id,
             name: el.name,
+            salePrice: Math.round(el.salePrice * 100) / 100,
+            purchasePrice: Math.round(el.averagePrice * 100) / 100,
           });
         });
         this.products = products;
@@ -166,41 +178,38 @@ export class EditPurchaseComponent implements OnInit {
     });
   }
 
-  getPurchaseDetails(id: number) {
-    this.purchaseService.getPurchaseInvoiceWithDetails(id).then(
+  getSellDetails(id: number) {
+    this.sellService.getSellInvoiceWithDetails(id).then(
       (result: any) => {
         console.log("result:", result);
         if (result.status) {
-          this.purchaseDetails = result.data;
-          this.purchaseForm.get("id").setValue(this.purchaseDetails.id);
-          this.purchaseForm
-            .get("supplierId")
-            .setValue(this.purchaseDetails.supplierId);
-          let supplierObj = this.getSupplierNameById(
-            this.purchaseDetails.supplierId
+          this.sellDetails = result.data;
+          this.sellForm.get("id").setValue(this.sellDetails.id);
+          this.sellForm.get("customerId").setValue(this.sellDetails.customerId);
+          let customerObj = this.getCustomerNameById(
+            this.sellDetails.customerId
           );
-          if (supplierObj) {
-            this.selectedSupplier = supplierObj.name;
+          if (customerObj) {
+            this.selectedCustomer = customerObj.name;
           }
-          this.purchaseForm.get("notes").setValue(this.purchaseDetails.notes);
+          this.sellForm.get("notes").setValue(this.sellDetails.notes);
 
-          // purchase Details
+          // sell Details
           let i = 0;
           for (let el of result.data.details) {
-            console.log('el:::', el);
-            
             if (i > 0) {
               this.addProductToForm();
             }
             this.productFormGroup.at(i).get("id").setValue(el.id);
             this.productFormGroup
               .at(i)
-              .get("purchaseInvoiceId")
-              .setValue(el.purchaseInvoiceId);
+              .get("sellInvoiceId")
+              .setValue(el.sellInvoiceId);
             this.productFormGroup.at(i).get("productId").setValue(el.productId);
             this.productFormGroup.at(i).get("quantity").setValue(el.quantity);
             this.productFormGroup.at(i).get("price").setValue(el.price);
             this.productFormGroup.at(i).get("paidPrice").setValue(el.paidPrice);
+            this.productFormGroup.at(i).get("purchasePrice").setValue(el.purchasePrice);
             let productObj = this.getProductNameById(el.productId);
             if (productObj) {
               this.selectedProduct[i] = productObj.name;
@@ -216,8 +225,8 @@ export class EditPurchaseComponent implements OnInit {
     console.log("end..");
   }
 
-  getSupplierNameById(id) {
-    return this.suppliers.find((el) => el.id == id);
+  getCustomerNameById(id) {
+    return this.customers.find((el) => el.id == id);
   }
 
   getProductNameById(id) {
@@ -225,81 +234,79 @@ export class EditPurchaseComponent implements OnInit {
   }
 
   save() {
-    console.log("purchaseForm:");
-    console.log(this.purchaseForm.value);
-    let purchaseDetails: PurchaseDetails;
-    let purchase: Purchase = {
-      id: this.purchaseForm.value.id,
-      supplierId: this.purchaseForm.value.supplierId,
+    console.log("sellForm:");
+    console.log(this.sellForm.value);
+    let sellDetails: SellDetails;
+    let sell: Sell = {
+      id: this.sellForm.value.id,
+      customerId: this.sellForm.value.customerId,
       date: (Date.now() / 1000) | 0,
-      notes: this.purchaseForm.value.notes,
+      notes: this.sellForm.value.notes,
       totalPaidPrice: 0,
       totalPrice: 0,
-      details: [purchaseDetails],
+      totalPurchasePrice: 0,
+      details: [sellDetails],
     };
 
     if (
-      this.purchaseForm.value.productFormGroup &&
-      this.purchaseForm.value.productFormGroup.length > 0
+      this.sellForm.value.productFormGroup &&
+      this.sellForm.value.productFormGroup.length > 0
     ) {
-      for (let el of this.purchaseForm.value.productFormGroup) {
-        purchaseDetails = {
+      for (let el of this.sellForm.value.productFormGroup) {
+        sellDetails = {
           id: el.id,
           productId: el.productId,
           quantity: el.quantity,
-          price: Math.round(el.price * 100) / 100,
-          paidPrice: Math.round(el.paidPrice * 100) / 100,
-          purchaseInvoiceId: el.purchaseInvoiceId,
+          price: el.price,
+          paidPrice: el.paidPrice,
+          sellInvoiceId: el.sellInvoiceId,
+          purchasePrice: el.purchasePrice,
         };
-        purchase.totalPaidPrice += Number(el.paidPrice);
-        purchase.totalPrice += Number(el.price)*Number(el.quantity);
-        purchase.details.push(purchaseDetails);
+        sell.totalPaidPrice += Number(el.paidPrice);
+        sell.totalPrice += Number(el.price) * Number(el.quantity);
+        sell.totalPurchasePrice += Number(el.purchasePrice) * Number(el.quantity);
+        sell.details.push(sellDetails);
       }
     }
     if (
-      purchase.details.length > 0 &&
-      (purchase.details[0] === null || purchase.details[0] === undefined)
+      sell.details.length > 0 &&
+      (sell.details[0] === null || sell.details[0] === undefined)
     ) {
-      purchase.details.splice(0, 1);
+      sell.details.splice(0, 1);
     }
-    console.log(":::purchase:::", purchase);
-    if (this.purchaseForm.valid) {
-      if (purchase.id && purchase.id > 0) {
-        // update current purchase invoice
-        this.purchaseService
-          .updatePurchaseInvoice(purchase)
-          .then((res: any) => {
-            if (res.id && res.id > 0) {
-              for (let el of purchase.details) {
-                el.purchaseInvoiceId = res.id;
-                this.purchaseService
-                  .updatePurchaseInvoiceDetails(el)
-                  .then((res) => {
-                    this.applyPurchaseInvoiceOnStock(el);
-                  });
-              }
-              this.sandoqService.UpdateOnSandoq(-1*purchase.totalPaidPrice);
-              this.routerExtensions.navigate(["/purchase"]);
-              console.log("updateProduct success", res);
-            }
-            console.log("updateProduct success", res);
-          });
-      } else {
-        // save new purchase invoice
-        this.purchaseService.savePurchaseInvoice(purchase).then((res: any) => {
-          console.log('savePurchaseInvoice>>>>>>>>', purchase);
-          
+    console.log(":::sell:::", sell);
+
+    if (this.sellForm.valid) {
+      if (sell.id && sell.id > 0) {
+        // update current sell invoice
+        this.sellService.updateSellInvoice(sell).then((res: any) => {
           if (res.id && res.id > 0) {
-            for (let el of purchase.details) {
-              el.purchaseInvoiceId = res.id;
-              this.purchaseService
-                .savePurchaseInvoiceDetails(el)
-                .then((res) => {
-                  this.applyPurchaseInvoiceOnStock(el);
-                });
+            for (let el of sell.details) {
+              el.sellInvoiceId = res.id;
+              this.sellService.updateSellInvoiceDetails(el).then((res) => {
+                this.applySellInvoiceOnStock(el);
+              });
             }
-            this.applyPurchaseInvoiceOnSandoq(-1 * purchase.totalPaidPrice);
-            this.routerExtensions.navigate(["/purchase"]);
+            this.sandoqService.UpdateOnSandoq(sell.totalPaidPrice);
+            this.routerExtensions.navigate(["/sell"]);
+            console.log("updateProduct success", res);
+          }
+          console.log("updateProduct success", res);
+        });
+      } else {
+        // save new sell invoice
+        console.log('sell>>>>>>>', sell);
+        
+        this.sellService.saveSellInvoice(sell).then((res: any) => {
+          if (res.id && res.id > 0) {
+            for (let el of sell.details) {
+              el.sellInvoiceId = res.id;
+              this.sellService.saveSellInvoiceDetails(el).then((res) => {
+                this.applySellInvoiceOnStock(el);
+              });
+            }
+            this.applyPurchaseInvoiceOnSandoq(sell.totalPaidPrice);
+            this.routerExtensions.navigate(["/sell"]);
             console.log("saveProduct success", res);
           }
         });
@@ -307,31 +314,22 @@ export class EditPurchaseComponent implements OnInit {
     }
   }
 
-  applyPurchaseInvoiceOnSandoq(money: number) {    
+  applyPurchaseInvoiceOnSandoq(money: number) {
     this.sandoqService.UpdateOnSandoq(money).then((res) => {
       console.log("applyPurchaseInvoiceOnSandoq:", res);
     });
   }
 
-  applyPurchaseInvoiceOnStock(purchaseDetails: PurchaseDetails) {
-    if (purchaseDetails) {
-      // let invoiceProducts = [{}]
-      this.purchaseService.purchaseUpdateStock(purchaseDetails).then((res) => {
-        console.log("purchaseUpdateStock:", res);
+  applySellInvoiceOnStock(sellDetails: SellDetails) {
+    if (sellDetails) {
+      this.sellService.sellUpdateStock(sellDetails).then((res) => {
+        console.log("sellUpdateStock:", res);
       });
-      // purchaseDetails = {
-      //   id: el.id,
-      //   productId: el.productId,
-      //   quantity: el.quantity,
-      //   price: el.price,
-      //   paidPrice: el.paidPrice,
-      //   purchaseInvoiceId: el.purchaseInvoiceId,
-      // };
     }
   }
 
   get productFormGroup() {
-    return this.purchaseForm.get("productFormGroup") as FormArray;
+    return this.sellForm.get("productFormGroup") as FormArray;
   }
 
   addProductToForm() {
@@ -343,7 +341,8 @@ export class EditPurchaseComponent implements OnInit {
         quantity: ["", [Validators.required]],
         price: ["", [Validators.required]],
         paidPrice: ["", [Validators.required]],
-        purchaseInvoiceId: [0],
+        purchasePrice: [0],
+        sellInvoiceId: [0],
       })
     );
   }
@@ -359,7 +358,7 @@ export class EditPurchaseComponent implements OnInit {
 
   resetFormControls(form) {
     form.get("id").reset();
-    form.get("supplierId").reset();
+    form.get("customerId").reset();
     form.get("notes").reset();
     form.get("productFormGroup").reset();
   }
@@ -368,6 +367,7 @@ export class EditPurchaseComponent implements OnInit {
     this.totalPaidPrice[index] =
       this.productFormGroup.at(index).get("quantity").value *
       this.productFormGroup.at(index).get("price").value;
+    this.totalPaidPrice[index] = Math.round(this.totalPaidPrice[index] * 100) / 100
     this.productFormGroup
       .at(index)
       .get("paidPrice")

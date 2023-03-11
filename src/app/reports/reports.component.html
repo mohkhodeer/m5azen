@@ -1,0 +1,24 @@
+<ActionBar class="action-bar">
+  <NavigationButton visibility="hidden"></NavigationButton>
+  <GridLayout columns="50, *">
+    <Label class="action-bar-title" text="أرباح اليوم" colSpan="2"></Label>
+
+    <Label class="fas" text="&#xf0c9;" (tap)="onDrawerButtonTap()"></Label>
+  </GridLayout>
+</ActionBar>
+
+<GridLayout class="page__content">
+  <Label class="page__content-icon far" text="&#xf1ea;"></Label>
+  <GridLayout rows="auto,*,auto">
+    <GridLayout row="0" columns="2*,*,*" padding="20" borderBottomWidth="1" borderBottomColor="#aaaaaa">
+      <Label fontSize="14" col="2" text="صافي الربح"></Label>
+      <Label fontSize="14" col="1" text="متأخرات العملاء"></Label>
+      <Label textAlignment="center" fontSize="14" col="0" text="التاريخ"></Label>
+    </GridLayout>
+    <GridLayout row="1" columns="2*,*,*" padding="20">
+      <Label verticalAlignment="top" textAlignment="right" fontSize="14" col="2"  [color]="fontColor" [text]=profit></Label>
+      <Label verticalAlignment="top" textAlignment="right" fontSize="14" col="1" [text]=customersDebts></Label>
+      <Label verticalAlignment="top" textAlignment="center" fontSize="14" col="0" text="{{ endDate }} - {{ startDate }}"></Label>
+    </GridLayout>
+  </GridLayout>
+</GridLayout>

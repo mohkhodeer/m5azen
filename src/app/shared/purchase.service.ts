@@ -23,8 +23,14 @@ export class PurchaseService {
     return new Promise<Object>((resolve, reject) => {
       this.connectDB().then((db) => {
         db.execSQL(
-          "INSERT INTO purchase_invoice (supplier_id, date, notes) VALUES (?,?,?)",
-          [purchase.supplierId, purchase.date, purchase.notes]
+          "INSERT INTO purchase_invoice (supplier_id, date, notes, total_price, total_paid_price) VALUES (?,?,?,?,?)",
+          [
+            purchase.supplierId,
+            purchase.date,
+            purchase.notes,
+            purchase.totalPrice,
+            purchase.totalPaidPrice,
+          ]
         ).then(
           (id) => {
             console.log("savePurchaseInvoice id:", id);
@@ -40,7 +46,7 @@ export class PurchaseService {
   }
 
   savePurchaseInvoiceDetails(purchaseDetails: PurchaseDetails) {
-    console.log('<<purchaseDetails>>', purchaseDetails);
+    console.log("<<purchaseDetails>>", purchaseDetails);
 
     return new Promise<Object>((resolve, reject) => {
       this.connectDB().then((db) => {
@@ -71,8 +77,15 @@ export class PurchaseService {
     return new Promise<Object>((resolve, reject) => {
       this.connectDB().then((db) => {
         db.execSQL(
-          "UPDATE purchase_invoice SET supplier_id = ?, date = ?, notes = ? WHERE id = ?",
-          [purchase.supplierId, purchase.date, purchase.notes]
+          "UPDATE purchase_invoice SET supplier_id = ?, date = ?, notes = ?, total_price =?, total_paid_price=? WHERE id = ?",
+          [
+            purchase.supplierId,
+            purchase.date,
+            purchase.notes,
+            purchase.totalPrice,
+            purchase.totalPaidPrice,
+            purchase.id,
+          ]
         ).then(
           (id) => {
             console.log("updatePurchaseInvoice id:", id);
@@ -119,7 +132,6 @@ export class PurchaseService {
         db.execSQL("DELETE FROM purchase_invoice WHERE id = ?", [id]).then(
           (id) => {
             console.log("deletePurchaseInvoice id:", id);
-            // TODO: delete all deletePurchaseInvoiceDetails
             this.deleteAllPurchaseInvoiceDetails(id);
             resolve({ status: true });
           },
@@ -174,14 +186,15 @@ export class PurchaseService {
   getPurchaseInvoiceWithDetails(id: number) {
     let purchaseObject: Purchase;
     let purchaseDetailsObject: PurchaseDetails;
+    let purchaseDetailsObjectArray: Array<PurchaseDetails> = [];
     return new Promise<Object>((resolve, reject) => {
       this.connectDB().then((db) => {
-        db.get(
+        db.all(
           "SELECT pi.*,pid.* from purchase_invoice as pi LEFT JOIN purchase_invoice_details as pid ON pi.id = pid.purchase_invoice_id WHERE pi.id = ?",
           [id]
         ).then(
           (data) => {
-            console.log('getPurchaseInvoiceWithDetails:', data);
+            console.log("getPurchaseInvoiceWithDetails:", data);
             if (data && data.length > 0) {
               // PurchaseInvoice master object
               purchaseObject = {
@@ -189,20 +202,26 @@ export class PurchaseService {
                 supplierId: data[0][1],
                 date: data[0][2],
                 notes: data[0][3] ? data[0][3] : "",
+                totalPrice: data[0][4] ? data[0][4] : 0,
+                totalPaidPrice: data[0][5] ? data[0][5] : 0,
                 details: null,
               };
               data.forEach((row, index) => {
                 // purchaseDetailsObject details object
+                console.log("row****", row);
+
                 purchaseDetailsObject = {
-                  purchaseInvoiceId: row[4],
-                  productId: row[5],
-                  quantity: row[6],
-                  price: row[7],
-                  paidPrice: row[8],
+                  id: row[6],
+                  purchaseInvoiceId: row[7],
+                  productId: row[8],
+                  quantity: row[9],
+                  price: row[10],
+                  paidPrice: row[11],
                 };
-                purchaseObject.details?.push(purchaseDetailsObject);
+                purchaseDetailsObjectArray.push(purchaseDetailsObject);
               });
-              console.log("getPurchaseInvoiceWithDetails:", purchaseObject);
+              purchaseObject.details = purchaseDetailsObjectArray;
+              console.log("getPurchaseInvoiceWithDetails::", purchaseObject);
               resolve({ status: true, data: purchaseObject });
             }
           },
@@ -221,7 +240,7 @@ export class PurchaseService {
     let purchaseArray: Array<Purchase> = [];
     return new Promise<Object>((resolve, reject) => {
       this.connectDB().then((db) => {
-        db.get(
+        db.all(
           "SELECT * from purchase_invoice as pi LEFT JOIN purchase_invoice_details as pid ON pi.id = pid.purchase_invoice_id"
         ).then(
           (data) => {
@@ -233,14 +252,16 @@ export class PurchaseService {
                   supplierId: row[0][1],
                   date: row[0][2],
                   notes: row[0][3] ? row[0][3] : "",
+                  totalPrice: data[0][4] ? data[0][4] : 0,
+                  totalPaidPrice: data[0][5] ? data[0][5] : 0,
                 };
                 // purchaseDetailsObject details object
                 purchaseDetailsObject = {
-                  purchaseInvoiceId: row[4],
-                  productId: row[5],
-                  quantity: row[6],
-                  price: row[7],
-                  paidPrice: row[8],
+                  purchaseInvoiceId: row[7],
+                  productId: row[8],
+                  quantity: row[9],
+                  price: row[10],
+                  paidPrice: row[11],
                 };
                 purchaseObject.details?.push(purchaseDetailsObject);
               });
@@ -263,23 +284,32 @@ export class PurchaseService {
     let purchaseArray: Array<{}> = [];
     return new Promise<Object>((resolve, reject) => {
       this.connectDB().then((db) => {
-        db.all("SELECT pi.*, u.name from purchase_invoice as pi LEFT JOIN user as u ON pi.supplier_id = u.id").then(
+        db.all(
+          "SELECT pi.*, u.name from purchase_invoice as pi LEFT JOIN user as u ON pi.supplier_id = u.id ORDER BY pi.id DESC"
+        ).then(
           (data) => {
-            console.log('getPurchaseInvoices>>>', data);
+            console.log("getPurchaseInvoices>>>", data);
 
             if (data && data.length > 0) {
               data.forEach((row, index) => {
                 // PurchaseInvoice master object
-                let dateFormat = new Date(row[2]*1000);
+                let dateFormat = new Date(row[2] * 1000);
                 purchaseObject = {
                   id: row[0],
-                  supplier: row[4],
-                  date: dateFormat.getDate() + '/' + (dateFormat.getMonth()+1) + '/' + dateFormat.getFullYear(),
+                  supplier: row[6],
+                  date:
+                    dateFormat.getDate() +
+                    "/" +
+                    (dateFormat.getMonth() + 1) +
+                    "/" +
+                    dateFormat.getFullYear(),
                   notes: row[3] ? row[3] : "",
+                  totalPrice: row[4] ? row[4] : "",
+                  totalPaidPrice: row[5] ? row[5] : "",
                 };
+                console.log("getPurchaseInvoices:", purchaseObject);
+                purchaseArray.push(purchaseObject);
               });
-              console.log("getPurchaseInvoices:", purchaseObject);
-              purchaseArray.push(purchaseObject);
             }
             resolve({ status: true, data: purchaseArray });
           },
@@ -296,12 +326,10 @@ export class PurchaseService {
     return new Promise<Object>((resolve, reject) => {
       this.connectDB().then((db) => {
         db.execSQL(
-          "UPDATE product SET quantity = quantity+?, average_price = (average_price*quantity + ?*?)/(quantity+?), sale_price = (average_price*quantity + ?*?)/(quantity+?) WHERE id = ?",
+          "UPDATE product SET quantity = quantity+?, average_price = ?, sale_price = (sale_price*quantity + ?*?)/(quantity+?) WHERE id = ?",
           [
             purchaseDetails.quantity,
             purchaseDetails.price,
-            purchaseDetails.quantity,
-            purchaseDetails.quantity,
             purchaseDetails.price,
             purchaseDetails.quantity,
             purchaseDetails.quantity,

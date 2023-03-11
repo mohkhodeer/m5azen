@@ -7,12 +7,12 @@
       text="&#xf0c9;"
       (tap)="onDrawerButtonTap()"
     ></Label>
-    <Label col="1" class="action-bar-title" text="عمليات الشراء"></Label>
+    <Label col="1" class="action-bar-title" text="عمليات البيع"></Label>
     <Label
       col="2"
       class="fas"
       text="&#xf055;"
-      [nsRouterLink]="['edit-purchase', 0]"
+      [nsRouterLink]="['edit-sell', 0]"
     ></Label>
   </GridLayout>
 </ActionBar>
@@ -29,7 +29,7 @@
       <Label col="1" color="#006455" textAlignment="center">الاجمالي</Label>
       <Label col="2" color="#006455" textAlignment="center">المدفوع</Label>
       <Label col="3" color="#006455" textAlignment="left">التاريخ</Label>
-      <Label col="4" color="#006455" textAlignment="left">المورد</Label>
+      <Label col="4" color="#006455" textAlignment="left">العميل</Label>
     </GridLayout>
     <ListView row="1" [items]="items">
       <ng-template let-item="item">
@@ -60,8 +60,8 @@
           <Label
             col="4"
             textAlignment="left"
-            [text]="item.supplier"
-            [nsRouterLink]="['edit-purchase', item.id]"
+            [text]="item.customer"
+            [nsRouterLink]="['edit-sell', item.id]"
           ></Label>
         </GridLayout>
       </ng-template>

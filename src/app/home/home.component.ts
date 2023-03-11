@@ -100,17 +100,19 @@ export class HomeComponent implements OnInit {
         message: "هل تريد فعلا حذف هذا المنتج؟",
         okButtonText: "موافق",
         cancelButtonText: "إلغاء",
-      }).then(() => {
+      }).then((yes) => {
         console.log("Dialog closed!");
-        this.productService.deleteProduct(id).then(
-          (result: any) => {
-            console.log("deleteProduct:::", result);
-            this.getAllProducts();
-          },
-          (err) => {
-            console.log("deleteProduct err:::", err);
-          }
-        );
+        if (yes) {
+          this.productService.deleteProduct(id).then(
+            (result: any) => {
+              console.log("deleteProduct:::", result);
+              this.getAllProducts();
+            },
+            (err) => {
+              console.log("deleteProduct err:::", err);
+            }
+          );
+        }
       });
     }
   }

@@ -25,7 +25,6 @@
         </ListPicker> -->
         <DropDown
           col="0"
-          backroundColor="red"
           textAlignment="left"
           itemsTextAlignment="center"
           [items]="categories"
@@ -96,6 +95,7 @@
           color="#ffffff"
           (tap)="save()"
           text="حفظ"
+          [isEnabled]="productForm.valid && this.selectedCategoryIndex > 0"
         ></button>
       </StackLayout>
     </StackLayout>

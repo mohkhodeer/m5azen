@@ -2,12 +2,12 @@ import { NgModule } from '@angular/core'
 import { Routes } from '@angular/router'
 import { NativeScriptRouterModule } from '@nativescript/angular'
 
-import { SettingsComponent } from './settings.component'
+import { SandoqComponent } from './sandoq.component'
 
-const routes: Routes = [{ path: '', component: SettingsComponent }]
+const routes: Routes = [{ path: '', component: SandoqComponent }]
 
 @NgModule({
   imports: [NativeScriptRouterModule.forChild(routes)],
   exports: [NativeScriptRouterModule],
 })
-export class SettingsRoutingModule {}
+export class SandoqRoutingModule {}

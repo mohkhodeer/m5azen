@@ -3,7 +3,7 @@ import { Routes } from '@angular/router'
 import { NativeScriptRouterModule } from '@nativescript/angular'
 
 const routes: Routes = [
-  { path: '', redirectTo: '/purchase', pathMatch: 'full' },
+  { path: '', redirectTo: '/sell', pathMatch: 'full' },
   {
     path: 'home',
     loadChildren: () => import('~/app/home/home.module').then((m) => m.HomeModule),
@@ -11,6 +11,10 @@ const routes: Routes = [
   {
     path: 'purchase',
     loadChildren: () => import('~/app/purchase/purchase.module').then((m) => m.PurchaseModule),
+  },
+  {
+    path: 'sell',
+    loadChildren: () => import('~/app/sell/sell.module').then((m) => m.SellModule),
   },
   {
     path: 'category',
@@ -21,9 +25,13 @@ const routes: Routes = [
     loadChildren: () => import('~/app/user/user.module').then((m) => m.UserModule),
   },
   {
-    path: 'settings',
-    loadChildren: () => import('~/app/settings/settings.module').then((m) => m.SettingsModule),
+    path: 'sandoq',
+    loadChildren: () => import('~/app/sandoq/sandoq.module').then((m) => m.SandoqModule),
   },
+  {
+    path: 'reports',
+    loadChildren: () => import('~/app/reports/reports.module').then((m) => m.ReportsModule),
+  }
 ]
 
 @NgModule({

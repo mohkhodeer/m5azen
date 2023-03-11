@@ -1,19 +1,21 @@
 
-export interface Purchase {
+export interface Sell {
   id?: number
-  supplierId: number
+  customerId: number
   date: number
   notes: string
   totalPrice: number
   totalPaidPrice: number
-  details?: PurchaseDetails[]
+  totalPurchasePrice: number
+  details?: SellDetails[]
 }
 
-export interface PurchaseDetails {
+export interface SellDetails {
   id?: number
-  purchaseInvoiceId: number
+  sellInvoiceId: number
   productId: number
   quantity: number
   price: number
   paidPrice: number
+  purchasePrice: number
 }

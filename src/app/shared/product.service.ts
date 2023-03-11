@@ -23,13 +23,12 @@ export class ProductService {
     return new Promise<Object>((resolve, reject) => {
       this.connectDB().then((db) => {
         db.execSQL(
-          "INSERT INTO product (category_id, name, quantity, unit, sale_price, average_price, notes) VALUES (?,?,?,?,?,?,?)",
+          "INSERT INTO product (category_id, name, quantity, unit, sale_price, notes) VALUES (?,?,?,?,?,?)",
           [
             product.categoryId,
             product.name,
             product.quantity,
             product.unit,
-            product.salePrice,
             product.salePrice,
             product.notes,
           ]
@@ -51,13 +50,12 @@ export class ProductService {
     return new Promise<Object>((resolve, reject) => {
       this.connectDB().then((db) => {
         db.execSQL(
-          "UPDATE product SET category_id = ?, name = ?, quantity = ?, unit = ?, sale_price = ?, average_price = ?, notes = ? WHERE id = ?",
+          "UPDATE product SET category_id = ?, name = ?, quantity = ?, unit = ?, sale_price = ?, notes = ? WHERE id = ?",
           [
             product.categoryId,
             product.name,
             product.quantity,
             product.unit,
-            product.salePrice,
             product.salePrice,
             product.notes,
             product.id,
@@ -143,38 +141,6 @@ export class ProductService {
         );
       });
     });
-  }
-
-  getProductAveragePrice(categoryId) {
-    // if (categoryId && categoryId > 0) {
-    //   this.connectDB().then((db) => {
-    //     db.all(
-    //       "SELECT quantity, sale_price FROM product WHERE category_id = ?",
-    //       [categoryId]
-    //     ).then(
-    //       (data) => {
-    //         if (data && data.length > 0) {
-    //           let averagePrice = 0;
-    //           console.log("getProductAveragePrice:", data);
-    //           let totalQuantity: number = 0;
-    //           let totalPrice: number = 0;
-    //           data.forEach((el, i) => {
-    //             totalQuantity += el[0];
-    //             totalPrice += el[0] * el[1];
-    //           });
-    //           averagePrice = totalPrice / totalQuantity;
-    //           averagePrice =
-    //             Math.round(averagePrice * 100 + Number.EPSILON) / 100;
-
-    //           return averagePrice;
-    //         }
-    //       },
-    //       (err) => {
-    //         console.log("getProductAveragePrice err:", err);
-    //       }
-    //     );
-    //   });
-    // }
   }
 
   prepareProducts(products: Array<any>) {
